@@ -1,6 +1,6 @@
 name: nginx-ingress-controller
-version: 0.0.1
-appVersion: 0.18.0
+version: 0.18.0
+appVersion: 0.0.1
 description: Chart for the nginx Ingress controller
 keywords:
 - ingress
@@ -9,7 +9,7 @@ keywords:
 - web
 - www
 - reverse proxy
-home: https://github.com/kubernetes/ingress-nginx
+home: http://www.nginx.org
 sources:
 - https://github.com/bitnami/bitnami-docker-nginx-ingress-controller
 maintainers:

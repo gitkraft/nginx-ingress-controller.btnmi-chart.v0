@@ -54,7 +54,7 @@ rules:
     resources:
       - configmaps
     resourceNames:
-      - {{ .Values.electionID }}-{{ .Values.ingressClass }}
+      - {{ .Values.controller.electionID }}-{{ .Values.controller.ingressClass }}
     verbs:
       - get
       - update

@@ -49,7 +49,7 @@ Parameter | Description | Default
 `name` | name of the controller component | `controller`
 `image.registry` | name of the container image registry | `docker.io`
 `image.repository` | controller container image repository | `bitnami/nginx-ingress-controller`
-`image.tag` | controller container image tag | `0.18.0-debian-9`
+`image.tag` | controller container image tag | `{VERSION}`
 `image.pullPolicy` | controller container image pull policy | `IfNotPresent`
 `config` | nginx ConfigMap entries | `nil`
 `hostNetwork` | If the nginx deployment / daemonset should run on the host's network namespace. Do not set this when `controller.service.externalIPs` is set and `kube-proxy` is used as there will be a port-conflict for port `80` | false
@@ -151,6 +151,8 @@ Parameter | Description | Default
 `defaultBackend.service.type` | type of default backend service to create | `ClusterIP`
 `imagePullSecrets` | name of Secret resource containing private registry credentials | `nil`
 `rbac.create` | if `true`, create & use RBAC resources | `true`
+`securityContext.fsGroup` |	Group ID for the container	| `1001`
+`securityContext.runAsUser` |	User ID for the container	| `1001`
 `podSecurityPolicy.enabled` | if `true`, create & use Pod Security Policy resources | `false`
 `serviceAccount.create` | if `true`, create a service account | ``
 `serviceAccount.name` | The name of the service account to use. If not set and `create` is `true`, a name is generated using the fullname template. | ``
@@ -175,3 +177,18 @@ $ helm install --name my-release -f values.yaml bitnami/nginx-ingress-controller
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
+
+## Upgrading
+
+### To 1.0.0
+
+Backwards compatibility is not guaranteed unless you modify the labels used on the chart's deployments.
+Use the workaround below to upgrade from versions previous to 1.0.0. The following example assumes that the release name is nginx-ingress-controller:
+
+```console
+$ kubectl patch deployment nginx-ingress-controller-default-backend --type=json -p='[{"op": "remove", "path": "/spec/selector/matchLabels/chart"}]'
+# If using deployments
+$ kubectl patch deployment nginx-ingress-controller --type=json -p='[{"op": "remove", "path": "/spec/selector/matchLabels/chart"}]'
+# If using daemonsets
+$ kubectl patch daemonset nginx-ingress-controller --type=json -p='[{"op": "remove", "path": "/spec/selector/matchLabels/chart"}]'
+```

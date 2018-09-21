@@ -10,6 +10,11 @@ metadata:
     release: {{ .Release.Name }}
   name: {{ template "nginx-ingress.fullname" . }}
 spec:
+  selector:
+    matchLabels:
+      app: {{ template "nginx-ingress.name" . }}
+      release: "{{ .Release.Name }}"
+      component: "{{ .Values.name }}"
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
   updateStrategy:
 {{ toYaml .Values.updateStrategy | indent 4 }}
@@ -39,7 +44,7 @@ spec:
 {{- end }}
       containers:
         - name: {{ template "nginx-ingress.name" . }}-{{ .Values.name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ template "nginx-ingress-controller.image" . }}"
           imagePullPolicy: "{{ .Values.image.pullPolicy }}"
           {{- if .Values.lifecycle }}
           lifecycle:
@@ -85,8 +90,8 @@ spec:
                 - ALL
                 add:
                 - NET_BIND_SERVICE
-            # www-data -> 33
-            runAsUser: 33
+            fsGroup: {{ .Values.securityContext.fsGroup }}
+            runAsUser: {{ .Values.securityContext.runAsUser }}
           {{- end }}
           env:
             - name: POD_NAME
